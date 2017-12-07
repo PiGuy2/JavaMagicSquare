@@ -1,10 +1,16 @@
 package magicSquare;
 
+import java.util.ArrayList;
+
 public class MagicSquare {
 	int [] [] magicSquare;
 
 	public MagicSquare () {
-		// TODO generate square
+		magicSquare = generateMagicSquare(3);
+	}
+
+	public MagicSquare (int d) {
+		magicSquare = generateMagicSquare(d);
 	}
 
 	public MagicSquare (int [] [] square) throws InvalidSquareException {
@@ -28,7 +34,7 @@ public class MagicSquare {
 				}
 			}
 		}
-		if (!checkIfValidSquareSimple(square)) {
+		if (!checkIfValidSquareSimple(square) || !checkEveryValueDifferent(square)) {
 			throw new InvalidSquareException(
 					"The \"square\" argument must be a valid magic square.");
 		}
@@ -64,11 +70,37 @@ public class MagicSquare {
 		return true;
 	}
 
+	public static boolean checkEveryValueDifferent (int [] [] square) {
+		ArrayList<Integer> v = new ArrayList<>();
+		for (int [] row : square) {
+			for (int i : row) {
+				if (v.contains(i)) {
+					return false;
+				}
+				v.add(i);
+			}
+		}
+		return true;
+	}
+
 	private static int sumArray (int [] n) {
 		int sum = 0;
 		for (int i : n) {
 			sum += i;
 		}
 		return sum;
+	}
+
+	public static int [] [] generateMagicSquare (int d) {
+		return new int [d] [d];
+	}
+
+	public void print () {
+		for (int [] row : magicSquare) {
+			for (int n : row) {
+				System.out.print(n + " ");
+			}
+			System.out.print("\n");
+		}
 	}
 }
