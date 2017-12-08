@@ -14,31 +14,47 @@ public class MagicSquare {
 	}
 
 	public MagicSquare (int [] [] square) throws InvalidSquareException {
+		checkSquareError(square);
+		magicSquare = square;
+	}
+
+	public static String checkSquare (int [] [] square) {
 		if (square == null || square.length == 0 || square[0] == null || square[0].length == 0) {
-			throw new InvalidSquareException("The \"square\" argument cannot be null.");
+			return "The \"square\" argument cannot be null.";
 		}
 		for (int [] row : square) {
 			if (row.length != square[0].length) {
-				throw new InvalidSquareException(
-						"All rows in the \"square\" array must have the same length.");
+				return "All rows in the \"square\" array must have the same length.";
 			}
 		}
 		if (square.length != square[0].length) {
-			throw new InvalidSquareException("The \"square\" argument must have equal dimensions.");
+			return "The \"square\" argument must have equal dimensions.";
 		}
 		for (int [] row : square) {
 			for (int i : row) {
 				if (i < 0) {
-					throw new InvalidSquareException(
-							"All numbers in the \"square\" array must not be less than zero.");
+					return "All numbers in the \"square\" array must not be less than zero.";
+				}
+				if (i > Math.pow(square.length, 2)) {
+					return "All numbers in the \"square\" array must be greater than n^2 (which is "
+							+ (int) Math.pow(square.length, 2) + ").";
 				}
 			}
 		}
-		if (!checkIfValidSquareSimple(square) || !checkEveryValueDifferent(square)) {
-			throw new InvalidSquareException(
-					"The \"square\" argument must be a valid magic square.");
+		if (!checkIfValidSquareSimple(square)) {
+			return "All rows, columns, and diagonals of the \"square\" argument must add up to the same number.";
 		}
-		magicSquare = square;
+		if (!checkEveryValueDifferent(square)) {
+			return "Every value in the \"square\" argument must be different.";
+		}
+		return null;
+	}
+
+	public static void checkSquareError (int [] [] square) throws InvalidSquareException {
+		String error = checkSquare(square);
+		if (error != null) {
+			throw new InvalidSquareException(error);
+		}
 	}
 
 	public static boolean checkIfValidSquareSimple (int [] [] square) {
