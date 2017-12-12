@@ -7,7 +7,7 @@ package magicSquare;
 @SuppressWarnings("serial")
 public class InvalidSquareException extends Exception {
 	public InvalidSquareException () {
-		super("This magic square is invalid");
+		super("This magic square is invalid.");
 	}
 
 	public InvalidSquareException (String message) {
@@ -26,5 +26,4 @@ public class InvalidSquareException extends Exception {
 			boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
-
 }

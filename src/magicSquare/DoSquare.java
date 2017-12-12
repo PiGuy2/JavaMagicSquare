@@ -3,6 +3,8 @@
  */
 package magicSquare;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author student
  *
@@ -10,8 +12,7 @@ package magicSquare;
 public class DoSquare {
 	public static void main (String [] args) {
 		while (true) {
-			if (!UserInput.getBool(
-					"Would you like to generate a magic square (otherwise you enter one)")) {
+			if (!UserInput.getBool("Would you like to generate a magic square (otherwise you enter one)")) {
 				String [] row1 = getRow("first");
 				int [] [] square = new int [row1.length] [row1.length];
 				square[0] = stringArrayToIntArray(row1);
@@ -22,16 +23,15 @@ public class DoSquare {
 							square[i] = stringArrayToIntArray(row);
 							break;
 						}
-						System.out.println("You must enter exactly " + row1.length
-								+ " numbers. You entered " + row.length + " numbers.");
+						System.out.println("You must enter exactly " + row1.length + " numbers. You entered "
+								+ row.length + " numbers.");
 					}
 				}
 				System.out.println("\nThat " + ((MagicSquare.checkIfValidSquareSimple(square)
 						&& MagicSquare.checkEveryValueDifferent(square))
 								? ("was a " + row1.length + "x" + row1.length + " magic square")
-								: "was not a magic square, because " + MagicSquare
-										.checkSquare(square).replaceAll("argument ", "")
-										.replaceAll("array ", "")
+								: "was not a magic square, because " + MagicSquare.checkSquare(square)
+										.replaceAll("argument ", "").replaceAll("array ", "")
 										.replaceAll("\"square\"", "magic square").toLowerCase()));
 				MagicSquare m;
 				try {
@@ -40,19 +40,36 @@ public class DoSquare {
 					m = null;
 				}
 				if (m != null) {
-					m.print();
+					m.print(UserInput.getBool("Would you like to pad the printed numbers with zeros"));
 				}
 				System.out.print("\n");
 			} else {
-				int d = UserInput.getInt("What would you like the side length of the square to be");
-				MagicSquare m = new MagicSquare(d);
-				m.print();
+				int d = UserInput.getInt("What would you like the side length of the square to be", 1,
+						Integer.MAX_VALUE);
+				MagicSquare m;
+				try {
+					m = new MagicSquare(d);
+					m.print(UserInput.getBool("Would you like to pad the printed numbers with zeros"));
+				} catch (MagicSquareGenerationError e) {
+					delay(100);
+					System.err.println(e.getMessage());
+					delay(100);
+				}
 			}
 			if (!UserInput.getBool("Would you like to check another square")) {
 				break;
 			}
 		}
 		System.out.println("\nBye!");
+	}
+
+	private static void delay (int a) {
+		try {
+			TimeUnit.MILLISECONDS.sleep(a);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	private static int [] stringArrayToIntArray (String [] s) {
@@ -64,20 +81,19 @@ public class DoSquare {
 	}
 
 	public static String ordinal (int i) {
-		String [] sufixes = new String [] {"th", "st", "nd", "rd", "th", "th", "th", "th", "th",
-				"th"};
+		String [] sufixes = new String [] {"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th"};
 		switch (i % 100) {
-		case 11:
-		case 12:
-		case 13:
-			return i + "th";
-		default:
-			return i + sufixes[i % 10];
+			case 11:
+			case 12:
+			case 13:
+				return i + "th";
+			default:
+				return i + sufixes[i % 10];
 		}
 	}
 
 	private static String [] getRow (String rowNum) {
-		return UserInput.get("Enter each value in the " + rowNum + " row separated by spaces")
-				.replaceAll(" +", " ").trim().split(" ");
+		return UserInput.get("Enter each value in the " + rowNum + " row separated by spaces").replaceAll(" +", " ")
+				.trim().split(" ");
 	}
 }
