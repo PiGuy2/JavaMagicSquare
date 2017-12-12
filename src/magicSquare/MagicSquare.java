@@ -5,28 +5,6 @@ import java.util.Random;
 import java.util.Vector;
 
 public class MagicSquare {
-	int [] [] magicSquare;
-
-	public MagicSquare () {
-		while (true) {
-			try {
-				magicSquare = generateMagicSquare(3).getArray();
-				break;
-			} catch (MagicSquareGenerationError e) {
-				continue;
-			}
-		}
-	}
-
-	public MagicSquare (int d) throws MagicSquareGenerationError {
-		magicSquare = generateMagicSquare(d).getArray();
-	}
-
-	public MagicSquare (int [] [] square) throws InvalidSquareException {
-		checkSquareError(square);
-		magicSquare = square;
-	}
-
 	public static boolean checkEveryValueDifferent (int [] [] square) {
 		ArrayList<Integer> v = new ArrayList<>();
 		for (int [] row : square) {
@@ -113,7 +91,8 @@ public class MagicSquare {
 		int d2 = (int) Math.pow(d, 2);
 
 		if (d < 1) {
-			throw new MagicSquareGenerationError("The dimension of the magic sqaure must be at least 1.");
+			throw new MagicSquareGenerationError(
+					"The dimension of the magic sqaure must be at least 1.");
 		} else if (d == 1) {
 			try {
 				return new MagicSquare(new int [] [] {{1}});
@@ -121,7 +100,8 @@ public class MagicSquare {
 				throw new MagicSquareGenerationError();
 			}
 		} else if (d == 2) {
-			throw new MagicSquareGenerationError("It is impossible to generate a 2x2 magic square.");
+			throw new MagicSquareGenerationError(
+					"It is impossible to generate a 2x2 magic square.");
 		} else if (d % 2 == 1) {
 			int x = (d - 1) / 2;
 			int y = 0;
@@ -142,7 +122,21 @@ public class MagicSquare {
 					// System.out.println("Value: " + ret[mod(y + 1, d)][x]);
 					throw new MagicSquareGenerationError();
 				}
+				int d20 = d2 / 20;
+				if (d > 100 && i % d20 == 0) {
+					int numBars = i / d20;
+					System.out.print("[");
+					for (int j = 0; j < 20; j++) {
+						if (j <= numBars) {
+							System.out.print("=");
+						} else {
+							System.out.print(" ");
+						}
+					}
+					System.out.print("]\r");
+				}
 			}
+			System.out.print("\n");
 		} else if (d == 4) {
 			Vector<Integer> nums = new Vector<>();
 			for (int l = 0; l < d; l++) {
@@ -170,7 +164,8 @@ public class MagicSquare {
 				}
 			}
 		} else {
-			throw new MagicSquareGenerationError("The dimensions of the magic sqaure must be odd or they must be 4.");
+			throw new MagicSquareGenerationError(
+					"The dimensions of the magic sqaure must be odd or they must be 4.");
 		}
 
 		// for (int [] row : retA) {
@@ -184,7 +179,8 @@ public class MagicSquare {
 		try {
 			ret = new MagicSquare(retA);
 		} catch (InvalidSquareException e) {
-			throw new MagicSquareGenerationError("Error when creating the magic square: " + e.getMessage());
+			throw new MagicSquareGenerationError(
+					"Error when creating the magic square: " + e.getMessage());
 		}
 
 		// ret.print();
@@ -199,6 +195,21 @@ public class MagicSquare {
 			ret = flipSquare(ret, false);
 		}
 		return ret;
+	}
+
+	private static String addCommas (String ret) {
+		ret += ",";
+		if (ret.length() > 3) {
+			String lastRet = ret;
+			while (true) {
+				ret = ret.replaceAll("(\\d)(\\d\\d\\d,)", "$1,$2");
+				if (ret.equals(lastRet)) {
+					break;
+				}
+				lastRet = ret;
+			}
+		}
+		return ret.substring(0, ret.length() - 1);
 	}
 
 	private static MagicSquare flipSquare (MagicSquare magic, boolean vertical) {
@@ -222,16 +233,18 @@ public class MagicSquare {
 		String ret = String.valueOf(n);
 		int zeros = len - ret.length();
 		for (int i = 0; i < zeros; i++) {
-			ret = (fillZeros ? "0" : " ") + ret;
+			ret = "0" + ret;
 		}
-		if (ret.length() > 3) {
-			for (int i = 3; i < ret.length(); i += 3) {
-				ret = ret.substring(0, ret.length() - i) + "," + ret.substring(ret.length() - i);
-			}
-		}
+		ret = addCommas(ret);
 		if (fillZeros) {
-			// return ret.replaceAll("0,", "00");
 			return ret;
+		}
+		String lastRet = ret;
+		while (true) {
+			ret = ret.replaceAll("^[0,]", " ");
+			if (ret.equals(lastRet)) {
+				break;
+			}
 		}
 		return ret.replaceAll(" ,", "  ");
 	}
@@ -284,6 +297,28 @@ public class MagicSquare {
 			sum += i;
 		}
 		return sum;
+	}
+
+	int [] [] magicSquare;
+
+	public MagicSquare () {
+		while (true) {
+			try {
+				magicSquare = generateMagicSquare(3).getArray();
+				break;
+			} catch (MagicSquareGenerationError e) {
+				continue;
+			}
+		}
+	}
+
+	public MagicSquare (int d) throws MagicSquareGenerationError {
+		magicSquare = generateMagicSquare(d).getArray();
+	}
+
+	public MagicSquare (int [] [] square) throws InvalidSquareException {
+		checkSquareError(square);
+		magicSquare = square;
 	}
 
 	public int [] [] getArray () {
